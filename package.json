@@ -1,0 +1,13 @@
+{
+  "name": "hillshaderjs",
+  "version": "1.0.0",
+  "description": "Does dynamic hillshading in the browser on a slippymap ",
+  "main": "index.html",
+  "repository": "https://github.com/Geodan/hillshaderjs.git",
+  "author": "Steven Ottens",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "leaflet": "^1.3.1"
+  }
+}

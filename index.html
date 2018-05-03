@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>Dynamic Holland Shading</title>
+    <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,600,600italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css" />    
+    <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <script src="Leaflet-0.7.2/leaflet-src.js"></script>
+    <!--script src="https://api.tiles.mapbox.com/mapbox.js/v1.4.0/mapbox.js"></script-->
+    <script src="leaflet-hash.js"></script>
+    <link href="https://api.tiles.mapbox.com/mapbox.js/v1.4.0/mapbox.css" rel="stylesheet" />
+    <script src="proj4.js"></script>
+    <script src="proj4leaflet.js"></script>
+    <style>
+        body {
+            margin:0;
+            padding:0;
+        }
+        html, body, #map {
+            height: 100%;
+        }
+        #map {
+        right: 260px;
+        }
+        #controls {
+            position: absolute;
+            top: 0px;
+            right: 0;
+            width: 400px;
+            z-index:999;
+        }
+        #controls label {
+            float: left;
+            clear: right;
+        }
+        #controls input {
+            width: 270px;
+            float: right;
+            margin-top:5px;;
+        }
+        .pad0 {
+            padding:2px 10px;
+        }
+        .alert {
+            color: red;
+        }
+    </style>
+    <style>
+html {
+font-family: 'Source Sans Pro', sans-serif;
+font-weight: 300;
+font-size: 10pt;
+}
+a {
+    font-weight: 600;
+    text-decoration:none;
+    color:#2e3436;
+}
+hr {
+   background-color: #ce5c00;
+   border: none;
+   height:1px;
+   margin-top: 20px;
+}
+.line {
+    margin: 10px;
+    text-align: center;
+    color: #ce5c00;
+      font-weight: 600;
+      font-style: italic;
+      
+}
+.logo {
+    text-align: center;
+    margin-top: 20px;
+}
+h1 {
+    text-align: center;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 700;
+    margin-top: 0;
+}
+p  {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+#sidepanel {
+    
+	display: block;
+	position: absolute;
+	float: right;
+	width: 260px;
+	height: 100%;
+	top: 0px;
+	right:0px;
+	bottom: 0px;
+	background: white;
+	
+	color:#030301; 
+	z-index:10000;
+	  box-shadow: -2px 0px 5px #888888;
+}
+
+
+td {
+    line-height: 14px;
+}
+h1 {
+	
+}
+.leaflet-container {
+	background: #eeeeec !important;
+}
+.footnote {
+    cursor:pointer;
+    color: #ce5c00;
+}
+.info {
+   
+    margin-top: 15px;
+	
+	line-height: 170%;
+}
+.hidden {
+    
+background: none;
+border: 0;
+text-align: center;
+}
+
+#content {
+	padding: 10px;
+    width: 230px;
+}
+#footnotediv {
+    font-style: italic;
+}
+#note {
+height:22px;
+text-align: centre;
+display: inline-block;
+}
+.datum {
+    width: 80px;
+    display: inline-block;
+    }
+.dag  {  
+    background: #4e9a06;
+    color: white;
+    border-left: solid 2px #4e9a06;
+    border-top: solid 2px #4e9a06;
+    border-right: solid 2px #4e9a06;
+}
+#dagveld {
+width: 4em;
+padding-left: 1px;
+font-size: 12pt;
+}
+#datumveld {
+font-size: 15pt;
+ border: solid 2px black;
+ background: white;
+color: black;
+width: 4em;
+padding-top: 0.8em;
+padding-bottom: 0.8em;
+display: block;
+vertical-align: middle;
+cursor:pointer;
+}
+#datumveld:hover {
+background: #4e9a06;
+color: white;
+}
+#timeveld {
+font-size: 15pt;
+background: #4e9a06;
+color: white;
+width: 4em;
+padding-top: 0.8em;
+padding-bottom: 0.8em;
+display: block;
+vertical-align: middle;
+cursor:pointer;
+border:solid #4e9a06 2px;
+}
+
+#timeveld:hover {
+border:solid black 2px;
+}
+.dark {
+    background: #2e3436 !important;
+    border: #2e3436 solid 2px!important;
+}
+.dark:hover {
+   border: #eeeeec solid 2px!important;
+}
+input[type=range],
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none;
+  margin:0; 
+  /* padding:0; */ 
+  /* border:0; */
+  }
+input[type=range] {
+width: 100%;
+  display:inline-block!important;
+  vertical-align:middle;
+  height:12px;
+  padding:0 2px;
+  border:2px solid transparent;
+  background:rgba(0,0,0,0.25);
+  min-width:100px;
+  overflow:hidden;
+  cursor:pointer;
+  }
+  input[type=range]::-ms-fill-upper { background:transparent; }
+  input[type=range]::-ms-fill-lower { background:rgba(255,255,255,0.25); }
+
+/* Browser thingies */
+input[type=range]::-moz-range-track { opacity:0; }
+input[type=range]::-ms-track        { opacity:0; }
+input[type=range]::-ms-tooltip      { display:none; }
+
+/* For whatever reason, these need to be defined
+ * on their own so dont group them */
+input[type=range]::-webkit-slider-thumb {
+  background:rgba(255,255,255,0.75);
+  height:12px; width:20px;
+  border-radius:3px;
+  cursor:ew-resize;
+  box-shadow:rgba(255,255,255,0.25) -1200px 0 0 1200px;
+  }
+input[type=range]::-ms-thumb {
+  margin:0;padding:0;border:0;
+  background:rgba(255,255,255,0.75);
+  height:12px; width:20px;
+  border-radius:3px;
+  cursor:ew-resize;
+  box-shadow:rgba(255,255,255,0.25) -1200px 0 0 1200px;
+  }
+input[type=range]::-moz-range-thumb {
+  margin:0;padding:0;border:0;
+  background:rgba(255,255,255,0.75);
+  height:12px; width:20px;
+  border-radius:3px;
+  cursor:ew-resize;
+  box-shadow:rgba(255,255,255,0.25) -1200px 0 0 1200px;
+  }
+
+input[type=range]:disabled::-moz-range-thumb { cursor: default;}
+input[type=range]:disabled::-ms-thumb { cursor: default;}
+input[type=range]:disabled::-webkit-slider-thumb { cursor: default;}
+input[type=range]:disabled { cursor: default; }
+
+
+.split {
+display: flex;
+}
+#play {
+    cursor:pointer;
+    padding:1em;
+    border:solid black 2px;
+    margin-top: 1em;
+    width: 4em;
+    
+    text-align:center;
+}
+#play:hover {
+    color: white;
+    background: #4e9a06;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id='sidepanel'>
+
+	<div id="content">
+<div class="split">
+<div style="flex:1">
+  <span class="datum dag"><label type="text" id="dagveld" size="3" class="hidden"  value=""></label></span>
+   
+  <label type="text" title="Click here to toggle the date slider"  id="datumveld" size="3" class="datum detail hidden"  value=""></label>
+
+    </div>
+   <div style="flex:1">
+    <label type="text" id="timeveld-lbl" size="3" class="hidden"
+	value="" title="Click here to toggle the time slider"><span id="note" title="This means that there is hardly any shade visible, move the slider to noon to see more."></span><span id="timeveld"></span></label>
+</div>
+</div>
+      
+   
+        <div id="dateslider" class='clearfix pad0'>Slide to change the <strong>date</strong>: <input  type="range" id="date"   min="1388588958092"    max="1420038558092"  value="1397225649096"
+        title="Move the slider to select a different date." /></div>
+        
+	
+    
+	
+     <div id="timeslider"  class='clearfix pad0'>Slide to change the <strong>time</strong>: <input type="range" id="time" title="Move the slider to see the shades move during the day"    min="0" max="1440" value="700" /></div>
+<div class="split">
+<div  id='play'>play</div>
+<div style="flex:1; padding:1em;" id="playhelp">Press play to see the shadows move</div>
+</div>
+<p>
+ This viewer is created by <a href="mailto:steven.ottens@geodan.nl"
+     title="Twitter">@stvno</a> and is inspired by the <a href="https://www.mapbox.com/blog/dynamic-hill-shading/"
+     title="I modified the hillshade algorithm to accept my height encoding
+     (as used in http://ahn.nl/viewer)">dynamic hillshade</a> and the <a href="http://www.suncalc.net/"
+     title="Awesome in its own right">SunCalc</a> viewers by <a href="http://agafonkin.com/en/">Vladimir Agafonkin</a>.<br/></p>
+     <p>
+      The hillshade is calculated based on the <a href="http://ahn.nl">AHN2</a> data. The Dutch open data detailed elevation model.
+     </p>
+    <p>Background data powered by <a href="http://pdok.nl">PDOK</a>:
+     <a href="http://opentopo.nl/">OpenTopo</a> background map <br/>. 
+	</p>
+	</div>
+
+
+	</div>
+	</div>
+<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.11.0/jquery-ui.min.js"></script>
+
+<script src="hillshade.js"></script>
+<script src="suncalc.js"></script>
+<script src="index.js"></script>
+
+</body>
+</html>
